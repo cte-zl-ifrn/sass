@@ -24,3 +24,16 @@ sast:
     stage: test
 include:
     - template: Auto-DevOps.gitlab-ci.yml
+
+publish:
+    image: docker:20.10.16
+    stage: build
+    services:
+        - docker:20.10.16-dind
+    script:
+        - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+        - IMAGE_NAME=ctezlifrn/sass:$CI_COMMIT_TAG
+        - docker build -t $IMAGE_NAME .
+        - docker push $IMAGE_NAME
+    only:
+        - tags
